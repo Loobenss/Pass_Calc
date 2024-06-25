@@ -12,6 +12,7 @@ on:
       - gh-pages
 
 jobs:
+  # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
     runs-on: ubuntu-20.04
