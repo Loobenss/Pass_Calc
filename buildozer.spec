@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3==3.11.6,kivy,Kivy-Garden,requests,toml,urllib3,pillow
+requirements = python3==3.11.6,kivy==2.2.0,Kivy-Garden,requests,toml,urllib3,pillow
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -52,6 +52,10 @@ icon.filename = icocal.png
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
 orientation = portrait
+
+p4a.local_recipes = /path/to/your/local/recipes
+# Ajoutez cette ligne pour spécifier --with-build-python
+p4a.build_env = --with-build-python
 
 # (list) List of service to declare
 #services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT2_TO_PY
