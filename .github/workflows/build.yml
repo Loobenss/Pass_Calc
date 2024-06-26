@@ -12,26 +12,19 @@ on:
       - gh-pages
 
 jobs:
+  # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           path: master
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11.6
-          architecture: x64
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install buildozer kivy==2.3.0 Kivy-Garden requests toml urllib3 pillow
+      - name: Check Python version
+        run: python --version
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
@@ -47,11 +40,17 @@ jobs:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
 
-      - name: Checkout data branch
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           path: data
           ref: data # Branch name
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11.6
+          architecture: x64
 
       - name: Push binary to data branch
         if: github.event_name == 'push'
