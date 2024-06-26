@@ -12,44 +12,42 @@ on:
       - gh-pages
 
 jobs:
+  # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
-    runs-on: ubuntu-23.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           path: master
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11.6
-          architecture: x64
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install buildozer kivy Kivy-Garden requests toml urllib3 pillow
-
       - name: Build with Buildozer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ccache git libncurses5 libffi-dev libssl-dev liblzma-dev libbz2-dev libsqlite3-dev libreadline-dev zlib1g-dev
-          buildozer android debug
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master
+          workdir: .
+          buildozer_version: stable
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
-          path: bin/*.apk
+          path: ${{ steps.buildozer.outputs.filename }}
 
-      - name: Checkout data branch
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           path: data
           ref: data # Branch name
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x64
 
       - name: Push binary to data branch
         if: github.event_name == 'push'
