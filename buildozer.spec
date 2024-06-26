@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3==3.11.6,kivy==2.2.0,Kivy-Garden,requests,toml,urllib3,pillow
+requirements = python3==3.11.6,kivy,Kivy-Garden,requests,toml,urllib3,pillow
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -53,10 +53,6 @@ icon.filename = icocal.png
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
 orientation = portrait
 
-p4a.local_recipes = /path/to/your/local/recipes
-# Ajoutez cette ligne pour spécifier --with-build-python
-p4a.build_env = --with-build-python
-
 # (list) List of service to declare
 #services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT2_TO_PY
 
@@ -71,7 +67,7 @@ p4a.build_env = --with-build-python
 osx.python_version = 3.11.6
 
 # Kivy version to use
-osx.kivy_version = 2.2.0
+#osx.kivy_version = 2.2.0
 
 #
 # Android specific
@@ -287,7 +283,8 @@ fullscreen = 0
 
 # (list) The Android archs to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
 # In past, was `android.arch` as we weren't supporting builds for multiple archs at the same time.
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
+#armeabi-v7a
 
 # (int) overrides automatic versionCode computation (used in build.gradle)
 # this is not the same as app version and should only be edited if you know what you're doing
@@ -325,8 +322,8 @@ android.allow_backup = True
 #p4a.fork = kivy
 
 # (str) python-for-android branch to use, defaults to master
-#p4a.branch = master
-p4a.branch = release-2022.12.20
+p4a.branch = master
+#p4a.branch = release-2022.12.20
 
 # (str) python-for-android specific commit to use, defaults to HEAD, must be within p4a.branch
 #p4a.commit = HEAD
@@ -372,11 +369,11 @@ ios.kivy_ios_branch = master
 # Uncomment to use a custom checkout
 #ios.ios_deploy_dir = ../ios_deploy
 # Or specify URL and branch
-ios.ios_deploy_url = https://github.com/phonegap/ios-deploy
-ios.ios_deploy_branch = 1.10.0
+#ios.ios_deploy_url = https://github.com/phonegap/ios-deploy
+#ios.ios_deploy_branch = 1.10.0
 
 # (bool) Whether or not to sign the code
-ios.codesign.allowed = false
+#ios.codesign.allowed = false
 
 # (str) Name of the certificate to use for signing the debug version
 # Get a list of available identities: buildozer ios list_identities
