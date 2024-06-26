@@ -14,7 +14,7 @@ on:
 jobs:
   build-android:
     name: Build for Android
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-23.04
 
     steps:
       - name: Checkout repository
@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install buildozer kivy==2.3.0 Kivy-Garden requests toml urllib3 pillow
+          pip install buildozer kivy Kivy-Garden requests toml urllib3 pillow
 
       - name: Build with Buildozer
         run: |
