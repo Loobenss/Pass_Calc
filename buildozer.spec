@@ -12,12 +12,6 @@ fullscreen = 0
 osx.python_version = 3.11.6
 osx.kivy_version = 2.3.0
 
-android.api = 31
-android.minapi = 21
-android.sdk = 31
-android.ndk = 23b
-android.ndk_api = 21
-
 android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
 
