@@ -12,6 +12,8 @@ fullscreen = 0
 osx.python_version = 3.11.6
 osx.kivy_version = 2.3.0
 
+android.build_options = --with-build-python
+
 android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
 
