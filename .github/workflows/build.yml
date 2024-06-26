@@ -15,7 +15,7 @@ jobs:
   # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-21.04
 
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
         with:
           repository_root: master
           workdir: .
-          buildozer_version: stable
+          buildozer_version: 1.5.0
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
