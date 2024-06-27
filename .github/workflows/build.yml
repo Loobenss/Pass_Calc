@@ -23,15 +23,21 @@ jobs:
         with:
           path: master
 
-  
       - name: Set up Python
-        # This is the version of the action for setting up Python, not the Python version.
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
-          # Semantic version range syntax or exact version of a Python version
           python-version: '3.10'
-          # Optional - x64 or x86 architecture, defaults to x64
-          architecture: 'x64'
+    
+      - name: Add Python 3.10 to PATH
+        run: echo "/opt/hostedtoolcache/Python/3.10.*/x64/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git python3-dev openjdk-8-jdk zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev curl libbz2-dev
+          python -m pip install --upgrade pip
+          pip install buildozer cython==0.29.24
+          
       # You can test your matrix by printing the current Python version
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
@@ -56,11 +62,11 @@ jobs:
           path: data
           ref: data # Branch name
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-          architecture: x64
+      #- name: Set up Python
+      #  uses: actions/setup-python@v2
+      # with:
+      #   python-version: '3.10'
+      #   architecture: x64
 
       - name: Push binary to data branch
         if: github.event_name == 'push'
