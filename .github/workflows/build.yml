@@ -42,12 +42,15 @@ jobs:
     - name: Install Android SDK
       run: |
         wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O android_cmd_tools.zip
-        mkdir -p $HOME/android-sdk/cmdline-tools/latest
-        unzip android_cmd_tools.zip -d $HOME/android-sdk/cmdline-tools/latest
+        mkdir -p $HOME/android-sdk/cmdline-tools
+        unzip android_cmd_tools.zip -d $HOME/android-sdk/cmdline-tools
+        mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
         export ANDROID_SDK_ROOT=$HOME/android-sdk
-        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "tools"
+        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+        echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$PATH" >> $GITHUB_ENV
+        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
     - name: Build APK
       run: buildozer -v android debug
