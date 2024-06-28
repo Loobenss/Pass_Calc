@@ -400,36 +400,32 @@ class Calc_view(Widget):
                 elif len(self.div) == 1:
                     self.diviser()
     
-            match inp:
-                
-                case "x":
-                    self.div = []
-                    self.mult = []
-                    self.multiplier()
-                case "/":
-                    self.mult = []
-                    self.div = []
-                    self.diviser()
-                case "-":
-                    # self.mult = []
-                    # self.div = []
+            if inp == "x":
+                self.div = []
+                self.mult = []
+                self.multiplier()
+            elif inp == "/":
+                self.mult = []
+                self.div = []
+                self.diviser()
+            elif inp == "-":
+                # self.mult = []
+                # self.div = []
 
-                    if chaine_oper[id-1] not in ("/", "x", "+", "(") and id != 0 :
-                        self.mult = []
-                        self.div = []
-                        self.ind += 1
-
-                    self.sous = -1
-                        
-                case "+":
+                if chaine_oper[id-1] not in ("/", "x", "+", "(") and id != 0:
                     self.mult = []
                     self.div = []
-
                     self.ind += 1
-                case _:
-                    ...
-                    # print("Aucune")
-        ...
+
+                self.sous = -1
+            elif inp == "+":
+                self.mult = []
+                self.div = []
+                self.ind += 1
+            else:
+                ...
+                # print("Aucune")
+        
 
     # Nettoie tout apres une operation terminee
     def clear(self):
