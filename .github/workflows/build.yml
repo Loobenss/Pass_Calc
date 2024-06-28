@@ -1,89 +1,67 @@
-name: Build and Deploy
-
+name: Build
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
   pull_request:
-    branches:
-      - main
+    branches-ignore:
+      - data
+      - gh-pages
 
 jobs:
-  build:
+  # Build job. Builds app for Android with Buildozer
+  build-android:
+    name: Build for Android
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: master
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
 
-    - name: Create virtual environment
-      run: python -m venv venv
+      - name: Create virtual environment
+        run: python -m venv venv
+  
+      - name: Set up environment variables
+        run: |
+          echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+          echo "$(pwd)/venv/bin" >> $GITHUB_PATH
+  
+      - name: Activate virtual environment and verify Python version
+        run: |
+          source venv/bin/activate
+          python --version
 
-    - name: Set up environment variables
-      run: |
-        echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
-        echo "$(pwd)/venv/bin" >> $GITHUB_PATH
 
-    - name: Activate virtual environment and verify Python version
-      run: |
-        source venv/bin/activate
-        python --version
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master
+          workdir: .
+          buildozer_version: stable
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential git openjdk-8-jdk zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev curl libbz2-dev
-        pip install --upgrade pip
-        pip install buildozer cython==0.29.24
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: ${{ steps.buildozer.outputs.filename }}
 
-    - name: Download and install Android SDK command line tools
-      run: |
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O commandlinetools.zip
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        unzip -q commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
-        mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-      shell: bash
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
 
-    - name: Set up Android SDK environment variables
-      run: |
-        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Accept Android SDK licenses
-      run: |
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-      shell: bash
-
-    - name: Install Android SDK packages
-      run: |
-        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "system-images;android-30;default;x86_64"
-      shell: bash
-
-    - name: Verify aidl installation
-      run: |
-        if ! command -v aidl &> /dev/null
-        then
-            echo "aidl could not be found"
-            exit 1
-        else
-            echo "aidl found"
-        fi
-      shell: bash
-
-    - name: Build APK
-      run: |
-        source venv/bin/activate
-        buildozer -v android debug
-      shell: bash
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
-      with:
-        name: app
-        path: ./buildozer/bin/*.apk
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
