@@ -29,8 +29,10 @@ jobs:
         echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
         echo "$(pwd)/venv/bin" >> $GITHUB_PATH
 
-    - name: Verify Python version
-      run: python --version
+    - name: Activate virtual environment and verify Python version
+      run: |
+        source venv/bin/activate
+        python --version
 
     - name: Install dependencies
       run: |
@@ -39,21 +41,29 @@ jobs:
         pip install --upgrade pip
         pip install buildozer cython==0.29.24
 
-    - name: Install Android SDK
+    - name: Download and install Android SDK command line tools
       run: |
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O android_cmd_tools.zip
+        wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O commandlinetools.zip
         mkdir -p $HOME/android-sdk/cmdline-tools
-        unzip android_cmd_tools.zip -d $HOME/android-sdk/cmdline-tools
+        unzip -q commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
         mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
         export ANDROID_SDK_ROOT=$HOME/android-sdk
         export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
         echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$PATH" >> $GITHUB_ENV
-        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+
+    - name: Accept Android SDK licenses
+      run: |
+        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+    - name: Install Android SDK packages
+      run: |
+        $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
     - name: Build APK
-      run: buildozer -v android debug
+      run: |
+        source venv/bin/activate
+        buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v2
