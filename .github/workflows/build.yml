@@ -47,23 +47,29 @@ jobs:
         mkdir -p $HOME/android-sdk/cmdline-tools
         unzip -q commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
         mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-        export ANDROID_SDK_ROOT=$HOME/android-sdk
-        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+      shell: bash
+
+    - name: Set up Android SDK environment variables
+      run: |
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$PATH" >> $GITHUB_ENV
+        echo "PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH" >> $GITHUB_ENV
+      shell: bash
 
     - name: Accept Android SDK licenses
       run: |
         $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+      shell: bash
 
     - name: Install Android SDK packages
       run: |
         $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+      shell: bash
 
     - name: Build APK
       run: |
         source venv/bin/activate
         buildozer -v android debug
+      shell: bash
 
     - name: Upload APK
       uses: actions/upload-artifact@v2
