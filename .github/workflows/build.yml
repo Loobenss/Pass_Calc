@@ -1,73 +1,54 @@
-name: Buildozer Android Build
-
+name: Build
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
   pull_request:
-    branches:
-      - main
+    branches-ignore:
+      - data
+      - gh-pages
 
 jobs:
-  build:
+  # Build job. Builds app for Android with Buildozer
+  build-android:
+    name: Build for Android
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: master
 
-    - name: Configurer Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'  # Changez ceci pour la version de Python souhaitée
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master
+          workdir: .
+          buildozer_version: stable
 
-    - name: Installer les dépendances
-      run: |
-        python -m pip install --upgrade pip
-        pip install buildozer cython
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: ${{ steps.buildozer.outputs.filename }}
 
-    - name: Installer Java et Ant
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y default-jdk ant
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
 
-    - name: Préparer le SDK Android
-      shell: bash
-      run: |
-        # Configurer les variables d'environnement
-        export ANDROID_HOME=$HOME/Android/Sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/31.0.0:$PATH
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          architecture: x64
 
-        # Créer les répertoires nécessaires
-        mkdir -p $ANDROID_HOME/cmdline-tools
-
-        # Télécharger et décompresser les outils en ligne de commande
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
-        unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
-        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-
-        # Accepter les licences et mettre à jour le SDK
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --update
-
-        # Installer les composants nécessaires du SDK, y compris build-tools
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3" "cmdline-tools;latest" "build-tools;31.0.0"
-
-        # Vérifier l'installation
-        ls $ANDROID_HOME/build-tools/
-
-    - name: Définir les variables d'environnement
-      run: |
-        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-        echo "PATH=$HOME/Android/Sdk/cmdline-tools/latest/bin:$HOME/Android/Sdk/platform-tools:$HOME/Android/Sdk/build-tools/29.0.3:$HOME/Android/Sdk/build-tools/31.0.0:$PATH" >> $GITHUB_ENV
-
-    - name: Vérifier l'outil aidl
-      run: |
-        source $GITHUB_ENV
-        which aidl
-        aidl --version
-
-    - name: Construire avec Buildozer
-      run: |
-        source $GITHUB_ENV
-        buildozer android debug
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
