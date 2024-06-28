@@ -63,16 +63,6 @@ jobs:
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-30"
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 
-      - name: Check if AIDL is installed
-        run: |
-          if ! command -v aidl &> /dev/null
-          then
-              echo "aidl could not be found"
-              exit 1
-          else
-              echo "aidl found"
-          fi
-
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
