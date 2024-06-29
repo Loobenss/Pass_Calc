@@ -16,7 +16,7 @@ class Calc_view(Widget):
     sous = 0
     err = 0
     opera = ""
-    Builder.load_file('/home/passing/PyPro/Cal/view.kv') # charge le fichier.kv
+    Builder.load_file('view.kv') # charge le fichier.kv
 
     def __init__(self, **kwargs):
         super(Calc_view, self).__init__(**kwargs)
@@ -24,7 +24,7 @@ class Calc_view(Widget):
 
 
     def press_effacer(self):
-        self.ids.image.source = '/home/passing/PyPro/Cal/erase_on_press.png'
+        self.ids.image.source = 'erase_on_press.png'
         # self.ids.eff.background_color = (1, 1, 1, .2)
         self.ids.eff.background_normal = ''
         # self.ids.image.size = 37, 36
@@ -43,7 +43,7 @@ class Calc_view(Widget):
         self.process()
     
     def release_effacer(self):
-        self.ids.image.source = '/home/passing/PyPro/Cal/erase_on_release.png'
+        self.ids.image.source = 'erase_on_release.png'
         self.ids.image.size = 35, 35
         self.ids.eff.background_color = (0, 0, 0, 0)
         self.ids.eff.background_normal = ''
