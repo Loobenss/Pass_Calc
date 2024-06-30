@@ -6,6 +6,7 @@ from kivy.core.window import Window
 
 # Window.size = (320, 590)
 Window.clearcolor = (0,0,0)
+Window.orientation = 'portrait'
 
 # Window.minimum_width = 320
 # Window.minimum_height = 590
