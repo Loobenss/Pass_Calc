@@ -27,7 +27,7 @@ class Calc_view(Widget):
         self.ids.image.source = 'erase_on_press.png'
         # self.ids.eff.background_color = (1, 1, 1, .2)
         self.ids.eff.background_normal = ''
-        # self.ids.image.size = 37, 36
+        self.ids.image.size = 60, 60
 
         newchaine = self.ids.opera.text[:-1]
         if newchaine == '':
@@ -44,7 +44,7 @@ class Calc_view(Widget):
     
     def release_effacer(self):
         self.ids.image.source = 'erase_on_release.png'
-        self.ids.image.size = 35, 35
+        self.ids.image.size = 65, 65
         self.ids.eff.background_color = (0, 0, 0, 0)
         self.ids.eff.background_normal = ''
         ...
