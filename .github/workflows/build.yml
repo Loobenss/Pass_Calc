@@ -58,8 +58,8 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
-          unzip commandlinetools.zip
-          mv cmdline-tools latest
+          unzip commandlinetools.zip -d cmdline-tools
+          mv cmdline-tools/cmdline-tools latest
           export ANDROID_SDK_ROOT=$HOME/android-sdk
           export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
           yes | sdkmanager --licenses
@@ -67,6 +67,9 @@ jobs:
 
       - name: Verify AIDL installation
         run: |
+          source venv/bin/activate
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
           if ! command -v aidl &> /dev/null
           then
               echo "aidl could not be found"
@@ -93,6 +96,6 @@ jobs:
           path: data
           ref: data # Branch name
 
-      #- name: Push binary to data branch
-      #  if: github.event_name == 'push'
-      #  run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      # - name: Push binary to data branch
+      # if: github.event_name == 'push'
+      # run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
