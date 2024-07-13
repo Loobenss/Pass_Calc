@@ -28,7 +28,7 @@ jobs:
           python --version
       - name: Verify Pyjnius version
         run: |
-          pyjnius --version
+          pip list
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
