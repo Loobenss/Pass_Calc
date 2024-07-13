@@ -46,9 +46,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.11
           architecture: x64
+          
+      - name: Verify Python version
+        run: |
+          python --version
+      - name: Verify Pyjnius version
+        run: |
+          pyjnius --version
 
-      - name: Push binary to data branch
-        if: github.event_name == 'push'
-        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      #- name: Push binary to data branch
+       # if: github.event_name == 'push'
+        #run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
