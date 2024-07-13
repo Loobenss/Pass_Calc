@@ -44,12 +44,12 @@ jobs:
       - name: Install dependencies
         run: |
           source venv/bin/activate
-          pip install buildozer pyjnius
+          pip install buildozer pyjnius Cython
 
-      - name: Verify pyjnius version
+      - name: Verify Cython version
         run: |
           source venv/bin/activate
-          python -c "import jnius; print(jnius.__version__)"
+          cython --version
 
       - name: Build with Buildozer
         run: |
