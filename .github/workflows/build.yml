@@ -54,13 +54,14 @@ jobs:
       - name: Build with Buildozer
         run: |
           source venv/bin/activate
+          cd master
           buildozer -v android debug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: master/bin/*.apk
 
       - name: Checkout
         uses: actions/checkout@v2
