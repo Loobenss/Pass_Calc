@@ -12,7 +12,6 @@ on:
       - gh-pages
 
 jobs:
-  # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
     runs-on: ubuntu-latest
@@ -23,12 +22,34 @@ jobs:
         with:
           path: master
 
-      - name: Verify Python version
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+          architecture: x64
+
+      - name: Create virtual environment
+        run: python -m venv venv
+
+      - name: Set up environment variables
         run: |
+          echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+          echo "$(pwd)/venv/bin" >> $GITHUB_PATH
+
+      - name: Activate virtual environment and verify Python version
+        run: |
+          source venv/bin/activate
           python --version
-      - name: Verify Pyjnius version
+
+      - name: Install dependencies
         run: |
-          pip list
+          source venv/bin/activate
+          pip install buildozer pyjnius
+
+      - name: Verify pyjnius version
+        run: |
+          source venv/bin/activate
+          python -c "import jnius; print(jnius.__version__)"
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
@@ -50,19 +71,6 @@ jobs:
           path: data
           ref: data # Branch name
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-          architecture: x64
-          
-      - name: Verify Python version
-        run: |
-          python --version
-      - name: Verify Pyjnius version
-        run: |
-          pyjnius --version
-
       #- name: Push binary to data branch
-       # if: github.event_name == 'push'
-        #run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      #  if: github.event_name == 'push'
+      #  run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
