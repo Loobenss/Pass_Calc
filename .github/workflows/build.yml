@@ -90,6 +90,6 @@ jobs:
           path: data
           ref: data # Branch name
 
-      # - name: Push binary to data branch
-      # if: github.event_name == 'push'
-      # run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
