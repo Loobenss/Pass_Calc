@@ -79,16 +79,18 @@ jobs:
           rm -rf ~/.buildozer
 
       - name: Build with Buildozer
+        id: buildozer
         run: |
           source venv/bin/activate
           cd master
           yes | buildozer -v android debug
+          echo "APK_PATH=$(find $(pwd)/bin -name '*.apk')" >> $GITHUB_ENV
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
-          path: master/bin/*.apk
+          path: ${{ env.APK_PATH }}
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -98,4 +100,4 @@ jobs:
 
       - name: Push binary to data branch
         if: github.event_name == 'push'
-        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin
+        run: python master/.ci/move_binary.py "${{ env.APK_PATH }}" master data bin
