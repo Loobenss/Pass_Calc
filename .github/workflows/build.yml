@@ -1,103 +1,103 @@
-# name: Build
-# on:
-#   push:
-#     branches-ignore:
-#       - data
-#       - gh-pages
-#     tags:
-#       - '**'
-#   pull_request:
-#     branches-ignore:
-#       - data
-#       - gh-pages
+name: Build
+on:
+  push:
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - data
+      - gh-pages
 
-# jobs:
-#   build-android:
-#     name: Build for Android
-#     runs-on: ubuntu-latest
+jobs:
+  build-android:
+    name: Build for Android
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#         with:
-#           path: master
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: master
 
-#       - name: Set up Java 17
-#         uses: actions/setup-java@v2
-#         with:
-#           distribution: 'temurin'
-#           java-version: '17'
+      - name: Set up Java 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-#       - name: Set up Python
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: 3.11
-#           architecture: x64
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+          architecture: x64
 
-#       - name: Create virtual environment
-#         run: python -m venv venv
+      - name: Create virtual environment
+        run: python -m venv venv
 
-#       - name: Set up environment variables
-#         run: |
-#           echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
-#           echo "$(pwd)/venv/bin" >> $GITHUB_PATH
+      - name: Set up environment variables
+        run: |
+          echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+          echo "$(pwd)/venv/bin" >> $GITHUB_PATH
 
-#       - name: Activate virtual environment and verify Python version
-#         run: |
-#           source venv/bin/activate
-#           python --version
+      - name: Activate virtual environment and verify Python version
+        run: |
+          source venv/bin/activate
+          python --version
 
-#       - name: Install dependencies
-#         run: |
-#           source venv/bin/activate
-#           pip install buildozer pyjnius Cython
+      - name: Install dependencies
+        run: |
+          source venv/bin/activate
+          pip install buildozer pyjnius Cython
 
-#       - name: Verify Cython version
-#         run: |
-#           source venv/bin/activate
-#           cython --version
+      - name: Verify Cython version
+        run: |
+          source venv/bin/activate
+          cython --version
 
-#       - name: Set up Android SDK
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y openjdk-17-jdk wget unzip
-#           mkdir -p $HOME/android-sdk/cmdline-tools
-#           cd $HOME/android-sdk/cmdline-tools
-#           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
-#           unzip commandlinetools.zip -d cmdline-tools
-#           mv cmdline-tools/cmdline-tools latest
-#           export ANDROID_SDK_ROOT=$HOME/android-sdk
-#           export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
-#           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-#           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "sources;android-30"
+      - name: Set up Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk wget unzip
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip -d cmdline-tools
+          mv cmdline-tools/cmdline-tools latest
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "sources;android-30"
 
-#       - name: Clean previous builds
-#         run: |
-#           source venv/bin/activate
-#           cd master
-#           buildozer appclean
-#           rm -rf ~/.buildozer
+      - name: Clean previous builds
+        run: |
+          source venv/bin/activate
+          cd master
+          buildozer appclean
+          rm -rf ~/.buildozer
 
-#       - name: Build with Buildozer
-#         id: buildozer
-#         run: |
-#           source venv/bin/activate
-#           cd master
-#           yes | buildozer -v android debug
-#           echo "APK_PATH=$(find $(pwd)/bin -name '*.apk')" >> $GITHUB_ENV
+      - name: Build with Buildozer
+        id: buildozer
+        run: |
+          source venv/bin/activate
+          cd master
+          yes | buildozer -v android debug
+          echo "APK_PATH=$(find $(pwd)/bin -name '*.apk')" >> $GITHUB_ENV
 
-#       - name: Upload artifacts
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: package
-#           path: ${{ env.APK_PATH }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: ${{ env.APK_PATH }}
 
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#         with:
-#           path: data
-#           ref: data # Branch name
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
 
-#       - name: Push binary to data branch
-#         if: github.event_name == 'push'
-#         run: python master/.ci/move_binary.py "${{ env.APK_PATH }}" master data bin
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ env.APK_PATH }}" master data bin
