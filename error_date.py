@@ -6,7 +6,7 @@ class Error_date(BoxLayout):
 
     def __init__(self, **kwargs):
         super(Error_date, self).__init__(**kwargs)
-        Window.size = (320, 590)
+        # Window.size = (320, 590)
         Window.clearcolor = (0, 0, 0, 1)
         self.orientation = 'vertical'
         self.add_widget(Label(text = "ERROR!!!", color = (1, 0, 0, 1), font_size = 32, bold = True))
