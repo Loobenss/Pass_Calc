@@ -18,7 +18,7 @@ Window.orientation = 'portrait'
 
 class Traitement(App):
 
-    max_date = datetime.date(2024, 6, 6) # date de fin
+    max_date = datetime.date(2024, 8, 6) # date de fin
     min_date = datetime.date(2024, 5, 3) # date de sorti
     cv = Calc_view()
     err = Error_date()
