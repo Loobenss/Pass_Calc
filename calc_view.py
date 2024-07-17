@@ -2,7 +2,6 @@ from kivy.uix.widget import Widget
 from kivy.lang import Builder
 from kivy.graphics import RoundedRectangle
 from kivy.graphics import Color
-
 from kivy.uix.button import Button
 
 
@@ -27,6 +26,7 @@ class Calc_view(Widget):
         self.ids.image.source = 'erase_on_press.png'
         # self.ids.eff.background_color = (1, 1, 1, .2)
         self.ids.eff.background_normal = ''
+        # self.ids.image.size = 37, 36
         self.ids.image.size = 60, 60
 
         newchaine = self.ids.opera.text[:-1]
@@ -400,31 +400,36 @@ class Calc_view(Widget):
                 elif len(self.div) == 1:
                     self.diviser()
     
-            if inp == "x":
-                self.div = []
-                self.mult = []
-                self.multiplier()
-            elif inp == "/":
-                self.mult = []
-                self.div = []
-                self.diviser()
-            elif inp == "-":
-                # self.mult = []
-                # self.div = []
-
-                if chaine_oper[id-1] not in ("/", "x", "+", "(") and id != 0:
+            match inp:
+                
+                case "x":
+                    self.div = []
+                    self.mult = []
+                    self.multiplier()
+                case "/":
                     self.mult = []
                     self.div = []
-                    self.ind += 1
+                    self.diviser()
+                case "-":
+                    # self.mult = []
+                    # self.div = []
 
-                self.sous = -1
-            elif inp == "+":
-                self.mult = []
-                self.div = []
-                self.ind += 1
-            else:
-                ...
-                # print("Aucune")
+                    if chaine_oper[id-1] not in ("/", "x", "+", "(") and id != 0 :
+                        self.mult = []
+                        self.div = []
+                        self.ind += 1
+
+                    self.sous = -1
+                        
+                case "+":
+                    self.mult = []
+                    self.div = []
+
+                    self.ind += 1
+                case _:
+                    ...
+                    # print("Aucune")
+        ...
         
 
     # Nettoie tout apres une operation terminee
@@ -590,7 +595,7 @@ class Calc_view(Widget):
         if self.ids.result.text != "":
             self.eq = True
             self.ids.opera.text = ""
-            self.ids.result.font_size = (52)
+            self.ids.result.font_size = (100)
             self.ids.result.foreground_color = (1, 1, 1, 1)
         # self.press_but("", 'egal')
     
