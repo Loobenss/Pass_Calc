@@ -513,6 +513,7 @@ class Calc_view(Widget):
                 self.ids.result.text = self.unite_apost(self.soma_res())
                 self.ids.opera.foreground_color = (1,1,1)
                 self.ids.result.foreground_color = (1,1,1, .4)
+                self.ids.result.font_size = 50
     
     def soma_res(self):
         resultat = 0
@@ -622,3 +623,4 @@ class Calc_view(Widget):
         self.ids[idb].canvas.before.add(bg)
         po =  RoundedRectangle(pos=self.ids[idb].pos, size=self.ids[idb].size, radius=[15])
         self.ids[idb].canvas.before.add(po)
+        
