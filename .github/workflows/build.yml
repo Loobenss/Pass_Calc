@@ -17,25 +17,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v2
         with:
           path: master
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-          architecture: x64
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libtool autoconf automake openjdk-17-jdk wget unzip python3-venv
 
       - name: Create virtual environment
-        run: python -m venv venv
+        run: python3 -m venv venv
 
       - name: Set up environment variables
         run: |
@@ -47,7 +40,7 @@ jobs:
           source venv/bin/activate
           python --version
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           source venv/bin/activate
           pip install buildozer pyjnius Cython
@@ -57,10 +50,19 @@ jobs:
           source venv/bin/activate
           cython --version
 
+      - name: Prepare autotools
+        run: |
+          cd master
+          libtoolize
+          autoreconf -fi
+
+      - name: Configure the project
+        run: |
+          cd master
+          ./configure
+
       - name: Set up Android SDK
         run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk wget unzip
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
@@ -92,7 +94,7 @@ jobs:
           name: package
           path: ${{ env.APK_PATH }}
 
-      - name: Checkout
+      - name: Checkout data branch
         uses: actions/checkout@v2
         with:
           path: data
